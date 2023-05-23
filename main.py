@@ -1,20 +1,16 @@
 import pandas as pd
 import re
-import tensorflow_hub as hub
-from sklearn.metrics.pairwise import cosine_similarity
+from sentence_transformers import SentenceTransformer, util
 from bs4 import BeautifulSoup
 import urllib.request
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from sklearn.feature_extraction.text import TfidfVectorizer
 import nltk
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-
-
-module_url = 'https://tfhub.dev/google/universal-sentence-encoder/4'
-model = hub.load(module_url)
+model_name = 'paraphrase-MiniLM-L6-v2'  # Pre-trained model for sentence embeddings
+model = SentenceTransformer(model_name)
 
 def preprocess_text(text, remove_tags=False):
     if remove_tags:
@@ -30,19 +26,22 @@ def preprocess_text(text, remove_tags=False):
     processed_text = " ".join(tokens)
     return processed_text
 
+def format_paragraphs(text, words_per_line=10):
+    words = text.split()
+    lines = [' '.join(words[i:i+words_per_line]) for i in range(0, len(words), words_per_line)]
+    return '\n'.join(lines)
+
 url = 'https://drive.google.com/u/0/uc?id=1tyy8KC1JCCBEJ22VMxeYNso8LKjP7Ta3&export=download'
 csv_file_path = 'question_data.csv'
 urllib.request.urlretrieve(url, csv_file_path)
 
 question_data = pd.read_csv(csv_file_path)
 question_texts = question_data['question_title'].apply(preprocess_text)
-vectorizer = TfidfVectorizer()
-question_vectors = vectorizer.fit_transform(question_texts)
 
-def format_paragraphs(text, words_per_line=10):
-    words = text.split()
-    lines = [' '.join(words[i:i+words_per_line]) for i in range(0, len(words), words_per_line)]
-    return '\n'.join(lines)
+def encode_text(text):
+    return model.encode([text])[0]
+
+question_embeddings = question_texts.apply(encode_text)
 
 app = Flask(__name__)
 CORS(app)
@@ -52,8 +51,8 @@ def search():
     data = request.get_json()
     user_input = data['query']
     user_input = preprocess_text(user_input)
-    user_input_vector = vectorizer.transform([user_input])
-    similarities = cosine_similarity(user_input_vector, question_vectors)[0]
+    user_input_embedding = encode_text(user_input)
+    similarities = question_embeddings.apply(lambda x: util.cos_sim(user_input_embedding, x))
     k = 5
     top_k_indices = similarities.argsort()[::-1][:k]
     results = []
