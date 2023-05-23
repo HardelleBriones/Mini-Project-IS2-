@@ -34,13 +34,13 @@ function App() {
   };
   return (
     <div className="container">
-      <h1 className="title">Search App</h1>
+      <h1 className="title">Curious Seeker</h1>
       <input className="input" type="text" value={query} onChange={handleInputChange} />
       <button className="button" onClick={handleSearch}>Search</button>
 
       <div className="results">
         <h2 className="results-title">Results:</h2>
-        <ul>
+        <ol style={{ listStyleType: 'none' }}>
           {results.map((result, index) => (
             <li key={index} className="result-item">
               <h3 className="result-title" onClick={() => handleExpand(index)}>
@@ -48,13 +48,13 @@ function App() {
               </h3>
               {expandedIndex === index && (
                 <div className="result-details">
-                 <pre className="result-body" dangerouslySetInnerHTML={renderMarkup(result.question_body)} />
-                 <pre className="result-body" dangerouslySetInnerHTML={renderMarkup(result.question_answer)} />
+                  <pre className="result-body" dangerouslySetInnerHTML={renderMarkup(result.question_body)} />
+                  <pre className="result-body" dangerouslySetInnerHTML={renderMarkup(result.question_answer)} />
                 </div>
               )}
             </li>
           ))}
-        </ul>
+        </ol>
       </div>
     </div>
   );
