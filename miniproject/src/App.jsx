@@ -29,7 +29,9 @@ function App() {
   const handleExpand = (index) => {
     setExpandedIndex(index === expandedIndex ? null : index);
   };
-
+  const renderMarkup = (markup) => {
+    return { __html: markup };
+  };
   return (
     <div className="container">
       <h1 className="title">Search App</h1>
@@ -46,8 +48,8 @@ function App() {
               </h3>
               {expandedIndex === index && (
                 <div className="result-details">
-                  <p className="result-body">{result.question_body}</p>
-                  <p className="result-body">{result.question_answer}</p>
+                 <pre className="result-body" dangerouslySetInnerHTML={renderMarkup(result.question_body)} />
+                 <pre className="result-body" dangerouslySetInnerHTML={renderMarkup(result.question_answer)} />
                 </div>
               )}
             </li>
