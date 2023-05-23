@@ -58,7 +58,7 @@ def search():
     top_k_indices = similarities.argsort()[::-1][:k]
     results = []
     for i, index in enumerate(top_k_indices):
-        if similarities[index] <= 0.40:
+        if similarities[index] <= 0.55:
             break
         question_title = question_data.loc[index, 'question_title']
         question_body = format_paragraphs(preprocess_text(question_data.loc[index, 'question_body'], remove_tags=True))
