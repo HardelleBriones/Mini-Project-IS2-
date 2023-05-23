@@ -1,5 +1,5 @@
 import pandas as pd
-from sentence_transformers import SentenceTransformer, util
+from sentence_transformers import SentenceTransformer, util, models
 from bs4 import BeautifulSoup
 import urllib.request
 from nltk.corpus import stopwords
@@ -7,8 +7,12 @@ from nltk.stem import WordNetLemmatizer
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-model_name = 'paraphrase-MiniLM-L6-v2'  # Pre-trained model for sentence embeddings
-model = SentenceTransformer(model_name)
+model_name = 'roberta-base' 
+
+word_embedding_model = models.Transformer(model_name)
+pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension())
+model = SentenceTransformer(modules=[word_embedding_model, pooling_model])
+
 
 def preprocess_text(text, remove_tags=False):
     if remove_tags:
