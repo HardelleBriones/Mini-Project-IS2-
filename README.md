@@ -4,18 +4,11 @@
 
 The following dependencies are required to run this project:
 
-- nltk
-- TensorFlow
-- TensorFlow Hub
-- scikit-learn
-- pandas
-
-You can install the dependencies using pip. Here are the commands to install them:
-
-```bash
-pip install nltk
-pip install tensorflow
-pip install tensorflow_hub
-pip install scikit-learn
-pip install pandas
+- pandas: `pip install pandas`
+- numpy: `pip install numpy`
+- sentence_transformers: `pip install sentence-transformers`
+- beautifulsoup4: `pip install beautifulsoup4`
+- nltk: `pip install nltk`
+- flask: `pip install flask`
+- flask_cors: `pip install flask_cors`
 
